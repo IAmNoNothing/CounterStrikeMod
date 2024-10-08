@@ -18,15 +18,15 @@ public class MatchCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(
             Commands.literal("match")
+                .then(Commands.literal("restart")
+                    .executes(MatchCommand::restartMatch))
+                .then(Commands.literal("start")
+                    .executes(MatchCommand::startMatch))
                 .then(Commands.literal("create")
                     .then(Commands.argument("mapName", StringArgumentType.string())
                         .executes(MatchCommand::createMatch)))
-                .then(Commands.literal("start")
-                    .executes(MatchCommand::startMatch))
                 .then(Commands.literal("stop")
                     .executes(MatchCommand::stopMatch))
-                .then(Commands.literal("restart")
-                    .executes(MatchCommand::restartMatch))
         );
     }
 
@@ -85,6 +85,8 @@ public class MatchCommand {
         }
 
         match.stop();
+        match = new Match(match.getMap());
+        Counterstrikemod.getInstance().setMatch(match);
         player.sendSystemMessage(Component.literal("Match on map " + match.getMap().getName() + " has been stopped!"));
         return 1;
     }

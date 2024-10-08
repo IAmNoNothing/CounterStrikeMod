@@ -191,6 +191,5 @@ tasks.register('copyJar', Copy) {
     dependsOn build
     from "${buildDir}/libs/"
     into "C:\\Users\\allo2\\curseforge\\minecraft\\Instances\\CounterStrike 1.19.2\\mods"
-    into "C:\\Users\\allo2\\curseforge\\minecraft\\Instances\\тест ухилянта\\mods"
     include "*.jar"
 }

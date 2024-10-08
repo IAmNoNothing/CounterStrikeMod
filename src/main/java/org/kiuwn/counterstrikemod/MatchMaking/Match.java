@@ -6,8 +6,6 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
 import org.kiuwn.counterstrikemod.Counterstrikemod;
 
 import java.util.*;
@@ -137,7 +135,10 @@ public class Match {
         }
     }
 
-    public void stop() { started = false; }
+    public void stop() {
+        started = false;
+        players.clear();
+    }
 
     public void setStarted(boolean started) { this.started = started; }
 
@@ -147,7 +148,7 @@ public class Match {
 
     public void onLivingDeath(LivingDeathEvent event) {
         Counterstrikemod.getLOGGER().debug("player died");
-        Counterstrikemod.getLOGGER().debug(event.getSource().toString());
+        Counterstrikemod.getLOGGER().debug(event.toString());
         if (event.getEntity() instanceof Player player) {
             DamageSource source = event.getSource();
             player.sendSystemMessage(Component.literal(source.toString()));

@@ -1,14 +1,15 @@
 package org.kiuwn.counterstrikemod;
 
 import com.mojang.logging.LogUtils;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.server.ServerStoppingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -110,9 +111,7 @@ public class Counterstrikemod {
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
-        // Some common setup code
-        LOGGER.info("HELLO FROM COMMON SETUP");
-        LOGGER.info("DIRT BLOCK >> {}", ForgeRegistries.BLOCKS.getKey(Blocks.DIRT));
+
     }
 
     @SubscribeEvent
@@ -129,6 +128,13 @@ public class Counterstrikemod {
     }
 
     @SubscribeEvent
+    public void onLivingDeath(LivingDeathEvent event) {
+        if (match != null) {
+            match.onLivingDeath(event);
+        }
+    }
+
+    @SubscribeEvent
     public void onServerStopping(ServerStoppingEvent event) {
         MapManager.getInstance().save();
     }
@@ -136,16 +142,6 @@ public class Counterstrikemod {
     // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent
     @Mod.EventBusSubscriber(modid = MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
     public static class ClientModEvents {
-        @SubscribeEvent
-        public static void onLivingDeath(LivingDeathEvent event) {
-            LOGGER.debug("onLivingDeath");
-            LOGGER.debug(event.toString());
-            Match match = Counterstrikemod.getInstance().getMatch();
-            if (match != null) {
-                match.onLivingDeath(event);
-            }
-        }
+
     }
-
-
 }
