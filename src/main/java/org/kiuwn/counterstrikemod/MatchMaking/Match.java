@@ -58,7 +58,7 @@ public class Match {
     private ArrayList<Vec3> getAllSpawnPositions() {
         ArrayList<Vec3> positions = new ArrayList<>();
         for (String team : map.getTeams()) {
-            positions.addAll(spawnPositions.get(team));
+            positions.addAll(copyList(spawnPositions.get(team)));
         }
         return positions;
     }

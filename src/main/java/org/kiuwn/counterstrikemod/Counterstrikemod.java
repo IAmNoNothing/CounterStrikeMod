@@ -136,16 +136,16 @@ public class Counterstrikemod {
     // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent
     @Mod.EventBusSubscriber(modid = MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
     public static class ClientModEvents {
-
-    }
-
-    @SubscribeEvent
-    public static void onLivingDeath(LivingDeathEvent event) {
-        LOGGER.debug("onLivingDeath");
-        LOGGER.debug(event.toString());
-        Match match = Counterstrikemod.getInstance().getMatch();
-        if (match != null) {
-            match.onLivingDeath(event);
+        @SubscribeEvent
+        public static void onLivingDeath(LivingDeathEvent event) {
+            LOGGER.debug("onLivingDeath");
+            LOGGER.debug(event.toString());
+            Match match = Counterstrikemod.getInstance().getMatch();
+            if (match != null) {
+                match.onLivingDeath(event);
+            }
         }
     }
+
+
 }
