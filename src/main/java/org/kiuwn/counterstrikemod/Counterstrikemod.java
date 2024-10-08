@@ -19,6 +19,7 @@ import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.kiuwn.counterstrikemod.Command.BuyCommand;
 import org.kiuwn.counterstrikemod.Command.MapCommand;
 import org.kiuwn.counterstrikemod.Command.MatchCommand;
 import org.kiuwn.counterstrikemod.MatchMaking.MapManager;
@@ -118,6 +119,7 @@ public class Counterstrikemod {
     public void onRegisterCommands(RegisterCommandsEvent e) {
         MapCommand.register(e.getDispatcher());
         MatchCommand.register(e.getDispatcher());
+        BuyCommand.register(e.getDispatcher());
     }
 
     // You can use SubscribeEvent and let the Event Bus discover methods to call
