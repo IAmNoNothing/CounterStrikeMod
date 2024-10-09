@@ -1,6 +1,7 @@
 package org.kiuwn.counterstrikemod.Command;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -8,6 +9,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import org.kiuwn.counterstrikemod.Counterstrikemod;
 import org.kiuwn.counterstrikemod.MatchMaking.MapManager;
 import org.kiuwn.counterstrikemod.MatchMaking.Match;
@@ -27,6 +29,11 @@ public class MatchCommand {
                         .executes(MatchCommand::createMatch)))
                 .then(Commands.literal("stop")
                     .executes(MatchCommand::stopMatch))
+                .then(Commands.literal("modify")
+                    .then(Commands.literal("money")
+                        .then(Commands.argument("player", StringArgumentType.string())
+                            .then(Commands.argument("amount", IntegerArgumentType.integer())
+                                .executes(MatchCommand::setMoney)))))
         );
     }
 
@@ -106,6 +113,22 @@ public class MatchCommand {
         }
 
         match.start();
+
+        return 1;
+    }
+
+    public static int setMoney(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        Match match = Counterstrikemod.getInstance().getMatch();
+        Player player = context.getSource().getPlayerOrException();
+
+        if (match == null) {
+            player.sendSystemMessage(Component.literal("No match found!"));
+            return 0;
+        }
+
+        String playerName = StringArgumentType.getString(context, "player");
+        int amount = IntegerArgumentType.getInteger(context, "amount");
+        match.setMoney(playerName, amount, player);
 
         return 1;
     }

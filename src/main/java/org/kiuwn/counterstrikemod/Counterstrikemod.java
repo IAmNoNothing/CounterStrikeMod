@@ -10,6 +10,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.server.ServerStoppingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -133,6 +134,13 @@ public class Counterstrikemod {
     public void onLivingDeath(LivingDeathEvent event) {
         if (match != null) {
             match.onLivingDeath(event);
+        }
+    }
+
+    @SubscribeEvent
+    public void onPlayerRespawnEvent(PlayerEvent.PlayerRespawnEvent event) {
+        if (match != null) {
+            match.onPlayerRespawnEvent(event);
         }
     }
 

@@ -9,7 +9,10 @@ import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import org.kiuwn.counterstrikemod.Counterstrikemod;
+import org.kiuwn.counterstrikemod.Gameplay.ShopItem;
 import org.kiuwn.counterstrikemod.MatchMaking.Match;
+
+import java.util.ArrayList;
 
 public class BuyCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
@@ -36,19 +39,54 @@ public class BuyCommand {
         String path = StringArgumentType.getString(context, "shopPath");
         Player player = context.getSource().getPlayerOrException();
 
-        try {
-            Integer.parseInt(path);
-        } catch (NumberFormatException e) {
-            player.sendSystemMessage(Component.literal("Invalid path: " + path));
+        ArrayList<ShopItem> items = match.getShop().getItemsWithPath(path);
+        if (items.isEmpty()) {
+            player.sendSystemMessage(Component.literal("Item " + path + " not found!"));
             return 0;
         }
 
-        match.buy(path, player);
+        if (items.size() == 1) {
+            match.buy(path, player);
+        } else {
+            BuyCommand.printItems(items, player);
+        }
 
         return 1;
     }
 
     public static int buy(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        return 0;
+        Match match = Counterstrikemod.getInstance().getMatch();
+        Player player = context.getSource().getPlayerOrException();
+
+        if (match == null) {
+            player.sendSystemMessage(Component.literal("No match found!"));
+            return 0;
+        }
+
+        if (!match.isStarted()) {
+            player.sendSystemMessage(Component.literal("Match is not started!"));
+            return 0;
+        }
+
+        ArrayList<ShopItem> items = match.getShop().getItemsWithPath("");
+        if (items.isEmpty()) {
+            player.sendSystemMessage(Component.literal("Shop is empty!"));
+            return 1;
+        }
+
+        BuyCommand.printItems(items, player);
+
+        return 1;
+    }
+
+    private static void printItems(ArrayList<ShopItem> items, Player player) {
+        player.sendSystemMessage(Component.literal("Items:"));
+        for (ShopItem item : items) {
+            String message = "%s: %s - %s".formatted(
+                item.path(), item.name(), item.price()
+            );
+
+            player.sendSystemMessage(Component.literal(message));
+        }
     }
 }
