@@ -1,8 +1,10 @@
 package org.kiuwn.counterstrikemod.MatchMaking;
 
+import com.tacz.guns.entity.EntityKineticBullet;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -409,8 +411,7 @@ public class Match {
     public void onLivingDeath(LivingDeathEvent event) {
         if (event.getEntity() instanceof Player dead) {
             DamageSource source = event.getSource();
-            Player killer = (Player) source.getDirectEntity();
-            if (killer != null) {
+            if (source.getEntity() instanceof Player killer) {
                 String killerTeam = teams.get(killer.getName().getString()).getA();
                 int newScore;
                 if (killer.equals(dead)) {
@@ -429,6 +430,7 @@ public class Match {
                 }
 
                 killer.sendSystemMessage(Component.literal("+1 Score"));
+                sendActionBarMoneyCount(killer, "Money: %d$ + " + moneyForKill + "$");
                 checkForWin();
             }
         }
@@ -457,7 +459,7 @@ public class Match {
                 return;
             }
 
-            player.getInventory().add(shopItem.item());
+            player.getInventory().add(shopItem.item().copy());
             playerBalances.put(player, playerBalances.get(player) - shopItem.price());
             player.sendSystemMessage(Component.literal("Bought %s".formatted(shopItem.name())));
         }
@@ -467,6 +469,13 @@ public class Match {
         return shop;
     }
 
+    public void sendActionBarMoneyCount(Player player, String fmt) {
+        String moneyMsg = fmt.formatted(playerBalances.get(player));
+        Component message = Component.literal(moneyMsg);
+        ClientboundSetActionBarTextPacket packet = new ClientboundSetActionBarTextPacket(message);
+        Objects.requireNonNull(Counterstrikemod.getInstance().getServer().getPlayerList().getPlayerByName(player.getName().getString())).connection.send(packet);
+    }
+
     public void setMoney(String playerName, int amount, Player sender) {
         MinecraftServer server = Counterstrikemod.getInstance().getServer();
         Player player = server.getPlayerList().getPlayerByName(playerName);
@@ -474,6 +483,7 @@ public class Match {
         if (player != null) {
             playerBalances.put(player, amount);
             sender.sendSystemMessage(Component.literal("Balance set to " + amount + " for " + playerName));
+            sendActionBarMoneyCount(player, "Money set to %d$");
             return;
         }
 
@@ -489,6 +499,9 @@ public class Match {
             position = nextSpawnPosition(teams.get(player.getName().getString()).getA());
         }
         player.teleportTo(position.x, position.y, position.z);
-
+        if (playerBalances.get(player) < startBalance) {
+            playerBalances.put(player, startBalance);
+        }
+        sendActionBarMoneyCount(player, "Money: %d$");
     }
 }

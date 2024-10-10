@@ -33,6 +33,11 @@ public class Shop {
         for (ShopItem item : items) {
             if (item.path().startsWith(path)) {
                 shopItems.add(item);
+                if (item.path().equals(path)) {
+                    shopItems.clear();
+                    shopItems.add(item);
+                    return shopItems;
+                }
             }
         }
 

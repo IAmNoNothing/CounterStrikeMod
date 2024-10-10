@@ -50,7 +50,7 @@ public class BuyCommand {
         } else {
             BuyCommand.printItems(items, player);
         }
-
+        match.sendActionBarMoneyCount(player, "Money: %d$");
         return 1;
     }
 
@@ -75,6 +75,7 @@ public class BuyCommand {
         }
 
         BuyCommand.printItems(items, player);
+        match.sendActionBarMoneyCount(player, "Money: %d$");
 
         return 1;
     }
